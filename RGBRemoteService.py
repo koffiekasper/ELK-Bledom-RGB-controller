@@ -3,10 +3,11 @@ from dotenv import load_dotenv
 import os
 from PayloadRepository import PayloadRepository
 import asyncio
-import threading
+from concurrent.futures import ThreadPoolExecutor
 global pipe_path
 
 pipe_path = "./.pipe"
+
 class RGBRemoteService:
     def __init__(self):
         load_dotenv()
@@ -17,6 +18,8 @@ class RGBRemoteService:
         self.pollingFrequencyHz = 60
         self.payloadRepository = PayloadRepository()
         self.pipeData = None
+        executor = ThreadPoolExecutor()
+        self.futureFile = executor.submit(self.ReadPipe)
         
     async def InitAsync(self):
         device = await BleakScanner.find_device_by_address(
@@ -43,33 +46,31 @@ class RGBRemoteService:
     def GetSleepTime(self):
         return 1 / self.pollingFrequencyHz
     
-    async def ReadPipe(self):
-        print("trying to read pipe")
-        try:
-            with open(pipe_path, "r") as pipe:
+    def ReadPipe(self):
+        with open(pipe_path, 'r') as pipe:
+            try:
                 data = pipe.read()
-            print(f"Read data from named pipe: {data}")
-            self.pipeData = data 
-        except FileNotFoundError:
-            return ""
+                print(f"Read data from named pipe: {data}")
+                self.pipeData = data 
+            except FileNotFoundError:
+                return ""
 
     def ToggleRandom(self):
         self.payloadRepository.SwitchMode("Random")
         
     async def ParsePipeData(self):
-        if not self.pipeData:
-            self.ReadPipe()
-        else:
+        if self.pipeData:
             print(self.pipeData)
-            if pipeData == "Random":
+            if self.pipeData == "mode_random":
                 self.ToggleRandom()
-                pipeData = ""
+                self.pipeData = ""
  
     async def RunLoop(self):
         while self.running:
             print("Main loop")
+            if self.futureFile.done():
+                await self.ParsePipeData()
             await self.SendPayload()
-            await self.ParsePipeData()
             if self.payloadRepository.Iterating():
                 self.payloadRepository.outputColor = self.payloadRepository.payloadList[self.payloadRepository.listIterator]
                 self.payloadRepository.IteratePayloadLoop()
