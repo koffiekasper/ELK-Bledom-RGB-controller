@@ -16,6 +16,18 @@ try:
         with open(pipe_path, 'w') as pipe:
             pipe.write('cmd_toggle')
             return ""
+        
+    @app.route("/color/<color>")
+    def colorName(color):
+        with open(pipe_path, 'w') as pipe:
+            pipe.write(f'cmd_colorName,{color}')
+            return ""
+        
+    @app.route("/hexcolor/<hex>")
+    def colorHex(hex):
+        with open(pipe_path, 'w') as pipe:
+            pipe.write(f'cmd_colorHex,{hex}')
+            return ""
 
     @app.route("/mode/random")
     def mode_random():
@@ -26,7 +38,4 @@ try:
     app.run(port=8000)
 
 except FileExistsError:
-    os.remove(pipe_path)
-    
-except:
     os.remove(pipe_path)

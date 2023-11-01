@@ -61,10 +61,21 @@ class RGBRemoteService:
         
     async def ParsePipeData(self):
         if self.pipeData:
-            if self.pipeData == "mode_random":
+            data = self.pipeData.split(',')
+            if data[0] == "mode_random":
                 print("Switching to Random mode")
                 self.ToggleRandom()
                 self.pipeData = ""
+            if data[0] == "cmd_colorName":
+                if not self.payloadRepository.SetCS4Color(data[1]):
+                    print(f"CSS4 color {data[1]} not found.")
+                else:
+                    print(f"CSS4 color {[data[1]]} set")
+            if data[0] == "cmd_colorHex":
+                if self.payloadRepository.SetHexColor(data[1]) :
+                    print(f'Set custom hex color {data[1]}')
+                else:
+                    print(f'Custom hex color {data[1]} not found.')
  
     async def RunLoop(self):
         while self.running:

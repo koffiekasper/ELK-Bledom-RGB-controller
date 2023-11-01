@@ -1,4 +1,5 @@
 import itertools
+import matplotlib.colors
 
 class PayloadRepository:
     modes = ["Random", "Flow", "Music", "Color"]
@@ -14,8 +15,7 @@ class PayloadRepository:
         return self.mode in PayloadRepository.iteratingModes
     
     def GeneratePayload(self):
-        if self.mode in PayloadRepository.iteratingModes:
-            return b"".fromhex(f"7e000503{self.outputColor}00ef")
+        return b"".fromhex(f"7e000503{self.outputColor}00ef")
     
     def IteratePayloadLoop(self):
         if self.listIterator >= len(self.payloadList) -1:
@@ -24,18 +24,44 @@ class PayloadRepository:
             self.listIterator += 1
    
     def SwitchMode(self, mode, args=None):
-        self.mode = mode
-        self.args = args
-        if mode == "Random":
-            if args == None:
-                args = {
-                    "stepSize": 1,
-                    "size": 100
-                }
-            self.payloadList = generate_color_grid(args["size"], args["size"], args["stepSize"])
-
+        if mode in self.modes:
+            self.mode = mode
+            self.args = args
+            if mode == "Random":
+                if args == None:
+                    args = {
+                        "stepSize": 1,
+                        "size": 100
+                    }
+                self.payloadList = generate_color_grid(args["size"], args["size"], args["stepSize"])
+            if mode == "Color":
+                pass
+                #nothing happens here because it already happened in the functions.
+        else:
+            return False
+            
+    def GetCS4ColorNames(self):
+        return [matplotlib.colors.CSS4_COLORS.keys()]
+    
+    def SetCS4Color(self, colorName):
+        try:
+            self.outputColor = matplotlib.colors.CSS4_COLORS[colorName][1:]
+            self.SwitchMode("Color")
+            return True
+        except:
+            return False
+        
+    def SetHexColor(self, hex):
+        # to-do: input validaiton here
+        
+        try:
+            self.SwitchMode("Color")
+            self.outputColor = hex
+            return True
+        except:
+            return False
+        
 def generate_color_gradient(color1, color2, num_steps):
-    # Extract RGB components from color1 and color2
     r1, g1, b1 = color1
     r2, g2, b2 = color2
     
