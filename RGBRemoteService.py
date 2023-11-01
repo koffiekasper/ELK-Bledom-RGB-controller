@@ -18,8 +18,8 @@ class RGBRemoteService:
         self.pollingFrequencyHz = 60
         self.payloadRepository = PayloadRepository()
         self.pipeData = None
-        executor = ThreadPoolExecutor()
-        self.futureFile = executor.submit(self.ReadPipe)
+        self.executor = ThreadPoolExecutor()
+        self.futureFile = self.executor.submit(self.ReadPipe)
         
     async def InitAsync(self):
         device = await BleakScanner.find_device_by_address(
@@ -47,13 +47,15 @@ class RGBRemoteService:
         return 1 / self.pollingFrequencyHz
     
     def ReadPipe(self):
+        print("Trying to read the data")
         with open(pipe_path, 'r') as pipe:
             try:
                 data = pipe.read()
                 print(f"Read data from named pipe: {data}")
                 self.pipeData = data 
+                return
             except FileNotFoundError:
-                return ""
+                return 
 
     def ToggleRandom(self):
         self.payloadRepository.SwitchMode("Random")
@@ -69,6 +71,7 @@ class RGBRemoteService:
         while self.running:
             if self.futureFile.done():
                 await self.ParsePipeData()
+                self.futureFile = self.executor.submit(self.ReadPipe) 
             await self.SendPayload()
             if self.payloadRepository.Iterating():
                 self.payloadRepository.outputColor = self.payloadRepository.payloadList[self.payloadRepository.listIterator]
