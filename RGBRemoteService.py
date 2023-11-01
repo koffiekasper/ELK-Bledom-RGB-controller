@@ -84,6 +84,8 @@ class RGBRemoteService:
                 else:
                     self.payloadRepository.SetPayloadList(colorHexList)
                     print("Set iterate list to: " + str(colors))
+            if data[0] == "cmd_setIterateListRainbow":
+                self.payloadRepository.SetPayloadListRainbow()
  
     async def RunLoop(self):
         while self.running:

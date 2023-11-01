@@ -36,6 +36,12 @@ try:
         with open(pipe_path, 'w') as pipe:
             pipe.write(f'cmd_setIterateList,{colors}')
             return ""
+        
+    @app.route("/setiteratelist/rainbow") 
+    def setiteratelistRainbow():
+        with open(pipe_path, 'w') as pipe:
+            pipe.write(f'cmd_setIterateListRainbow')
+            return ""
 
     @app.route("/mode/random")
     def mode_random():

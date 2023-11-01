@@ -1,5 +1,6 @@
 import itertools
 import matplotlib.colors
+from utilities.rainbowcolors import rainbow_hex_colors
 
 class PayloadRepository:
     modes = ["Random", "Flow", "Music", "Color"]
@@ -43,6 +44,9 @@ class PayloadRepository:
     def SetPayloadList(self, payloadList):
         self.listIterator = 0
         self.payloadList = payloadList
+        
+    def SetPayloadListRainbow(self):
+        self.SetPayloadList(rainbow_hex_colors)
             
     def GetCS4ColorNames(self):
         return [matplotlib.colors.CSS4_COLORS.keys()]
