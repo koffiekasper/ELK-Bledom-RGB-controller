@@ -11,15 +11,7 @@ class PayloadRepository:
         self.listIterator = 0
         self.payloadList = ["000000"]
         self.mode = "Random"
-        self.iterateFrequencyHz = 60
    
-    async def RunLoop(self):
-        while self.Iterating():
-            print('Iterating')
-            await asyncio.sleep(self.GetSleepTime()) 
-            self.outputColor = self.payloadList[self.listIterator]
-            self.IteratePayloadLoop()
-            
     def Iterating(self):
         return self.mode in PayloadRepository.iteratingModes
     
@@ -33,12 +25,6 @@ class PayloadRepository:
         else:
             self.listIterator += 1
    
-    def SetIterateFrequency(self, hertz):
-        self.iterateFrequencyHz = hertz
-        
-    def GetSleepTime(self):
-        return 1 / self.iterateFrequencyHz
-    
     def SwitchMode(self, mode, args=None):
         self.mode = mode
         self.args = args

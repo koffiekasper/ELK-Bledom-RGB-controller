@@ -60,14 +60,13 @@ class RGBRemoteService:
         
     async def ParsePipeData(self):
         if self.pipeData:
-            print(self.pipeData)
             if self.pipeData == "mode_random":
+                print("Switching to Random mode")
                 self.ToggleRandom()
                 self.pipeData = ""
  
     async def RunLoop(self):
         while self.running:
-            print("Main loop")
             if self.futureFile.done():
                 await self.ParsePipeData()
             await self.SendPayload()
