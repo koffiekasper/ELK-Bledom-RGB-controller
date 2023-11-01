@@ -47,7 +47,6 @@ class RGBRemoteService:
         return 1 / self.pollingFrequencyHz
     
     def ReadPipe(self):
-        print("Trying to read the data")
         with open(pipe_path, 'r') as pipe:
             try:
                 data = pipe.read()
