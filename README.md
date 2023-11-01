@@ -4,7 +4,7 @@ This project includes a simple Flask API, meant for user control. Also it includ
 
 ### Starting up
 1. Create a file called ".env" in the main folder.
-2. Fill it with the following contents, replacing ADDRESS and SERVICE with the values of your RGB controller
+2. Fill it with the following contents, replacing ADDRESS and GATTHANDLE with the values of your RGB controller
 `ADDRESS=EEBA4CF3-B124-5AFE-3FCF-D0EBD7206E53`   
 `GATTHANDLE=13`
 3. Install PIP dependencies
