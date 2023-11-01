@@ -86,6 +86,8 @@ class RGBRemoteService:
                     print("Set iterate list to: " + str(colors))
             if data[0] == "cmd_setIterateListRainbow":
                 self.payloadRepository.SetPayloadListRainbow()
+            if data[0] == "cmd_setSpeedHz":
+                self.SetPollingFrequency(int(data[1]))
  
     async def RunLoop(self):
         while self.running:

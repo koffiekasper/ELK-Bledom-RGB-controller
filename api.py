@@ -42,6 +42,13 @@ try:
         with open(pipe_path, 'w') as pipe:
             pipe.write(f'cmd_setIterateListRainbow')
             return ""
+    
+    @app.route("/set_speed/<hz>")
+    def setSpeed(hz):
+        with open(pipe_path, 'w') as pipe:
+            pipe.write(f'cmd_setSpeedHz,{hz}')
+            return ""
+        
 
     @app.route("/mode/random")
     def mode_random():
