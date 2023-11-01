@@ -76,6 +76,14 @@ class RGBRemoteService:
                     print(f'Set custom hex color {data[1]}')
                 else:
                     print(f'Custom hex color {data[1]} not found.')
+            if data[0] == "cmd_setIterateList":
+                colors = data[1:]
+                colorHexList = [self.payloadRepository.GetCS4ColorFromName(color) for color in colors]
+                if False in colorHexList:
+                    print("One or more of the colors are not found")
+                else:
+                    self.payloadRepository.SetPayloadList(colorHexList)
+                    print("Set iterate list to: " + str(colors))
  
     async def RunLoop(self):
         while self.running:

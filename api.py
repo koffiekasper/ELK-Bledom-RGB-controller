@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import request, jsonify
 import os
 
 try:
@@ -27,6 +28,13 @@ try:
     def colorHex(hex):
         with open(pipe_path, 'w') as pipe:
             pipe.write(f'cmd_colorHex,{hex}')
+            return ""
+    
+    @app.route("/setiteratelist", methods=["POST"])
+    def setiteratelist():
+        colors = request.form.get('colors')
+        with open(pipe_path, 'w') as pipe:
+            pipe.write(f'cmd_setIterateList,{colors}')
             return ""
 
     @app.route("/mode/random")

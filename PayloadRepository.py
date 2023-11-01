@@ -39,17 +39,27 @@ class PayloadRepository:
                 #nothing happens here because it already happened in the functions.
         else:
             return False
+        
+    def SetPayloadList(self, payloadList):
+        self.listIterator = 0
+        self.payloadList = payloadList
             
     def GetCS4ColorNames(self):
         return [matplotlib.colors.CSS4_COLORS.keys()]
     
-    def SetCS4Color(self, colorName):
+    def GetCS4ColorFromName(self, colorName):
         try:
-            self.outputColor = matplotlib.colors.CSS4_COLORS[colorName][1:]
-            self.SwitchMode("Color")
-            return True
+            return matplotlib.colors.CSS4_COLORS[colorName][1:]
         except:
             return False
+    
+    def SetCS4Color(self, colorName):
+        outputColor = self.GetCS4ColorFromName(colorName)
+        if outputColor == False:
+            return False
+        self.outputColor = outputColor
+        self.SwitchMode("Color")
+        return True
         
     def SetHexColor(self, hex):
         # to-do: input validaiton here
