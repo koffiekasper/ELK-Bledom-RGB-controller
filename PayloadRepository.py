@@ -3,7 +3,7 @@ import matplotlib.colors
 from utilities.rainbowcolors import rainbow_hex_colors
 
 class PayloadRepository:
-    modes = ["Random", "Flow", "Music", "Color"]
+    modes = ["Random", "Flow", "Music", "Color", "BeatControlled"]
     iteratingModes = ["Random", "Flow"] 
     
     def __init__(self):
@@ -14,6 +14,9 @@ class PayloadRepository:
    
     def Iterating(self):
         return self.mode in PayloadRepository.iteratingModes
+   
+    def ToggleColorMode(self):
+        self.mode = "Color"
     
     def GeneratePayload(self):
         return b"".fromhex(f"7e000503{self.outputColor}00ef")
@@ -23,7 +26,10 @@ class PayloadRepository:
             self.listIterator = 0
         else:
             self.listIterator += 1
-   
+            
+    def IsBeatControlled(self):
+        return self.mode == "BeatControlled"
+    
     def SwitchMode(self, mode, args=None):
         if mode in self.modes:
             self.mode = mode
@@ -38,6 +44,9 @@ class PayloadRepository:
             if mode == "Color":
                 pass
                 #nothing happens here because it already happened in the functions.
+            if mode == "BeatControlled":
+                self.payloadList = rainbow_hex_colors
+                
         else:
             return False
         
