@@ -57,6 +57,12 @@ def main():
             with open(pipe_path, 'w') as pipe:
                 pipe.write('mode_random')
                 return ""
+            
+        @app.route("/mode/beat_controlled")
+        def beat_controlled():
+            with open(pipe_path, 'w') as pipe:
+                pipe.write('mode_beatcontrolled')
+                return ""
 
         app.run(port=8000)
 
