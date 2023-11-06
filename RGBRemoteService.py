@@ -34,9 +34,7 @@ class RGBRemoteService:
         self.pipeData = None
         self.pipeDataOsc = None
         self.executor = ThreadPoolExecutor()
-        self.executorOsc = ThreadPoolExecutor()
         self.futureFile = self.executor.submit(self.ReadPipe)
-        self.futureFileOsc = self.executorOsc.submit(self.ReadPipeOsc)
         
     async def InitAsync(self):
         device = await BleakScanner.find_device_by_address(
@@ -81,10 +79,16 @@ class RGBRemoteService:
                 return
             except FileNotFoundError:
                 return 
-            
+    
+    def ProcessOscData(self, endpoint, data):
+        data = str(data) + endpoint
+        print(data)
+        if "/beat" in data and self.payloadRepository.IsBeatControlled():
+            self.payloadRepository.IteratePayloadLoop()
+            self.payloadRepository.RandomIteratePayloadLoop()
+     
     async def ParseOscPipeData(self):
         if self.pipeDataOsc:
-            print(self.pipeDataOsc)
             data = self.pipeDataOsc.split(',')
             if "/beat" in data and self.payloadRepository.IsBeatControlled():
                 self.payloadRepository.IteratePayloadLoop()
@@ -135,9 +139,9 @@ class RGBRemoteService:
             if self.futureFile.done():
                 await self.ParsePipeData()
                 self.futureFile = self.executor.submit(self.ReadPipe) 
-            if self.futureFileOsc.done():
-                await self.ParseOscPipeData()
-                self.futureFileOsc = self.executorOsc.submit(self.ReadPipeOsc)
+#            if self.futureFileOsc.done():
+#                await self.ParseOscPipeData()
+#                self.futureFileOsc = self.executorOsc.submit(self.ReadPipeOsc)
             await self.SendPayload()
             if self.payloadRepository.Iterating():
                 self.payloadRepository.IteratePayloadLoop()

@@ -1,6 +1,7 @@
 import itertools
 import matplotlib.colors
 from utilities.rainbowcolors import rainbow_hex_colors
+import random
 
 class PayloadRepository:
     modes = ["Random", "Flow", "Music", "Color", "BeatControlled"]
@@ -21,6 +22,9 @@ class PayloadRepository:
     def GeneratePayload(self):
         return b"".fromhex(f"7e000503{self.outputColor}00ef")
     
+    def RandomIteratePayloadLoop(self):
+        self.listIterator = random.randint(0, len(self.payloadList)-1)
+        
     def IteratePayloadLoop(self):
         if self.listIterator >= len(self.payloadList) -1:
             self.listIterator = 0

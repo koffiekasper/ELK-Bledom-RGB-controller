@@ -3,6 +3,7 @@ matplotlib.use('TkAgg') # <-- THIS MAKES IT FAST!
 import numpy
 import pyaudio
 import threading
+from time import sleep
 
 class InputRecorder:
     """Simple, cross-platform class to record from the default input device."""
@@ -10,7 +11,7 @@ class InputRecorder:
     def __init__(self, beatDetector):
         self.RATE = 44100
         self.BUFFERSIZE = 2**10
-        self.secToRecord = .05
+        self.secToRecord = .1
         self.kill_threads = False
         self.has_new_audio = False
         self.beatDetector = beatDetector
@@ -42,13 +43,14 @@ class InputRecorder:
         self.in_stream = self.p.open(format=pyaudio.paInt16,
                                      channels=1,
                                      rate=self.RATE,
-                                     input_device_index=1,#default_input_device_info["index"],
+                                     input_device_index=default_input_device_info["index"],
                                      input=True,
                                      frames_per_buffer=self.BUFFERSIZE)
         self.beatDetector.ui.select_audio_source(default_input_device_info["index"])
         self.actual_index = default_input_device_info["index"]
 
         self.audio = numpy.empty((self.chunks_to_record * self.BUFFERSIZE), dtype=numpy.float32)
+        sleep(1)
 
     def close(self):
         self.kill_threads = True
@@ -57,6 +59,7 @@ class InputRecorder:
     def change_input(self, index):
         if index != self.actual_index:
             print("Using input device : {:s}".format(self.p.get_device_info_by_host_api_device_index(0, index).get('name')))
+            print(index)
             try:
                 self.in_stream = self.p.open(format=pyaudio.paInt16,
                                             channels=1,
@@ -67,7 +70,7 @@ class InputRecorder:
                 self.actual_index = index
             except:
                 self.in_stream = self.p.open(format=pyaudio.paInt16,
-                                            channels=2,
+                                            channels=1,
                                             input_device_index=1,
                                             rate=self.RATE,
                                             input=True,
@@ -91,7 +94,7 @@ class InputRecorder:
         self.t = threading.Thread(target=self.record)
         self.t.start()
 
-    def fft(self, data=None, trim_by=2, log_scale=False, div_by=200):
+    def fft(self, data=None, trim_by=2, log_scale=False, div_by=100):
         if not data:
             data = self.audio.flatten()
         left, right = numpy.split(numpy.abs(numpy.fft.fft(data)), 2)

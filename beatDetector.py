@@ -6,6 +6,13 @@ import sys
 from PyQt5 import QtCore, QtWidgets
 from bpm import SignalGenerator, AudioAnalyzer
 from recorder import *
+#import threading
+import asyncio
+from RGBRemoteService import RGBRemoteService
+
+async def StartRemoteSignaller(RGBRemote):
+    await RGBRemote.InitAsync()
+    
 
 
 class BeatDetector:
@@ -36,10 +43,10 @@ class BeatDetector:
         7,  # Flash Noise
     ]
 
-    def __init__(self, window) -> None:
+    def __init__(self, window, func=None) -> None:
         self.ui = ui.UserInterface(self.on_auto_prog_button_clicked, self.on_input_changed)
         self.ui.setup_ui(window)
-        self.osc_client = osc.OscClient("0.0.0.0", 777)
+        self.osc_client = osc.OscClient("0.0.0.0", 777, func)
         self.auto_prog = True 
 
         # Wire up beat detector and signal generation
@@ -53,6 +60,7 @@ class BeatDetector:
         signal_generator.on_new_song(self.on_new_song)
         signal_generator.on_bpm_change(self.on_bpm_change)
         signal_generator.on_intensity_change(self.on_intensity_change)
+    
 
         # Start beat detection
         self.timer = QtCore.QTimer()
@@ -127,14 +135,33 @@ class BeatDetector:
     def close(self):
         self.input_recorder.close()
 
+def main(func):
+    app = QtWidgets.QApplication(sys.argv)
+    window = QtWidgets.QMainWindow()
+
+    # Start beat tracking
+    beat_detector = BeatDetector(window, func)
+
+    # Display window
+    window.show()
+    code = app.exec_()
+
+    # Clean up
+    beat_detector.close()
+    sys.exit(code)
 
 if __name__ == "__main__":
+    RGBRemote = RGBRemoteService()
+#    SignallerThread = threading.Thread(target=RGBRemote, args=())
+    SignallerThread = threading.Thread(target=asyncio.run, args=(RGBRemote.InitAsync(),))
+    SignallerThread.start()
+    print('hi')
     # Setup UI
     app = QtWidgets.QApplication(sys.argv)
     window = QtWidgets.QMainWindow()
 
     # Start beat tracking
-    beat_detector = BeatDetector(window)
+    beat_detector = BeatDetector(window, RGBRemote.ProcessOscData)
 
     # Display window
     window.show()

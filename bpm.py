@@ -2,7 +2,6 @@ from PyQt5.QtCore import QTimer
 from PyQt5 import QtCore
 from recorder import *
 from time import perf_counter
-
 class AudioAnalyzer:
     min_bpm = 80
     max_bpm = 160
@@ -220,6 +219,7 @@ class AudioAnalyzer:
 
     def detect_beat(self, time_since_last_beat):
         print("Detected: Beat")
+        
         bpm_detected = 60 / time_since_last_beat
         if len(self.bpm_history) < 8:
             if bpm_detected > self.min_bpm:
